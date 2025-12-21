@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+/* Hide scrollbar for cleaner mobile experience */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Map container takes full height minus nav */
+.map-container {
+  height: calc(100vh - 4rem);
+  width: 100%;
+}
+
+/* Bottom safe area for iOS */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
