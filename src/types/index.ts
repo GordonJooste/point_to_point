@@ -99,8 +99,8 @@ export interface LiveLocation {
   heading?: number;
   speed?: number;
   updated_at: string;
-  // Joined data
-  user?: User;
+  // Joined data (partial user for display)
+  user?: Pick<User, 'id' | 'username'>;
 }
 
 // API response types

@@ -7,6 +7,23 @@ import { getMarkerIcon, userLocationMarkerSvg } from '@/lib/maps/icons';
 import { calculateDistance, formatDistance, openDirections } from '@/lib/maps/utils';
 import { Navigation, MapPin, Check, Loader2 } from 'lucide-react';
 
+// Constants for inactive thresholds
+const INACTIVE_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
+const REMOVE_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2 hours
+const INACTIVE_GREY = '#9ca3af'; // Tailwind gray-400
+
+// Check if a user is inactive (5+ minutes since last update)
+function isUserInactive(updatedAt: string): boolean {
+  const lastUpdate = new Date(updatedAt).getTime();
+  return Date.now() - lastUpdate >= INACTIVE_THRESHOLD_MS;
+}
+
+// Check if a user should be removed (2+ hours since last update)
+function shouldRemoveUser(updatedAt: string): boolean {
+  const lastUpdate = new Date(updatedAt).getTime();
+  return Date.now() - lastUpdate >= REMOVE_THRESHOLD_MS;
+}
+
 interface Props {
   waypoints: Waypoint[];
   userLocation: { lat: number; lng: number } | null;
@@ -32,11 +49,13 @@ function stringToColor(str: string): string {
 }
 
 // Create SVG data URL for user marker with initials
-function createUserMarkerSvg(initials: string, color: string): string {
+function createUserMarkerSvg(initials: string, color: string, isInactive: boolean = false): string {
+  const displayColor = isInactive ? INACTIVE_GREY : color;
+  const opacity = isInactive ? 0.6 : 1;
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-      <circle cx="16" cy="16" r="14" fill="${color}" stroke="white" stroke-width="2"/>
-      <text x="16" y="21" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="Arial, sans-serif">${initials}</text>
+      <circle cx="16" cy="16" r="14" fill="${displayColor}" stroke="white" stroke-width="2" opacity="${opacity}"/>
+      <text x="16" y="21" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="Arial, sans-serif" opacity="${opacity}">${initials}</text>
     </svg>
   `;
   return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
@@ -187,24 +206,29 @@ export default function GoogleMapContainer({
       )}
 
       {/* Other Users Live Locations */}
-      {liveLocations.map((loc) => {
-        const username = loc.user?.username || 'Unknown';
-        const initials = username.slice(0, 2).toUpperCase();
-        const color = stringToColor(username);
-        return (
-          <Marker
-            key={loc.user_id}
-            position={{ lat: loc.latitude, lng: loc.longitude }}
-            icon={{
-              url: createUserMarkerSvg(initials, color),
-              scaledSize: new google.maps.Size(32, 32),
-              anchor: new google.maps.Point(16, 16),
-            }}
-            title={username}
-            zIndex={500}
-          />
-        );
-      })}
+      {liveLocations
+        .filter((loc) => !shouldRemoveUser(loc.updated_at))
+        .map((loc) => {
+          const username = loc.user?.username || 'Unknown';
+          const initials = username.slice(0, 2).toUpperCase();
+          const color = stringToColor(username);
+          const inactive = isUserInactive(loc.updated_at);
+
+          return (
+            <Marker
+              key={loc.user_id}
+              position={{ lat: loc.latitude, lng: loc.longitude }}
+              icon={{
+                url: createUserMarkerSvg(initials, color, inactive),
+                scaledSize: new google.maps.Size(32, 32),
+                anchor: new google.maps.Point(16, 16),
+              }}
+              title={`${username}${inactive ? ' (inactive)' : ''}`}
+              zIndex={inactive ? 400 : 500}
+              opacity={inactive ? 0.7 : 1}
+            />
+          );
+        })}
 
       {/* Info Window */}
       {selectedWaypoint && (

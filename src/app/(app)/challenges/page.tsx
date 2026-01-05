@@ -21,7 +21,7 @@ export default function ChallengesPage() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
 
   // Get unique categories
-  const categories = [...new Set(challenges.map((c) => c.category).filter(Boolean))];
+  const categories = Array.from(new Set(challenges.map((c) => c.category).filter(Boolean)));
 
   // Filter challenges
   const filteredChallenges = challenges.filter((challenge) => {
@@ -148,7 +148,7 @@ export default function ChallengesPage() {
           onCapture={handlePhotoCapture}
           onCancel={() => setSelectedChallenge(null)}
           isUploading={isUploading}
-          challengeName={selectedChallenge.name}
+          challengeName={selectedChallenge.title}
         />
       )}
     </div>

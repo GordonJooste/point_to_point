@@ -31,8 +31,8 @@ export function useLiveLocations(currentUserId: string | undefined) {
           )
         `)
         .neq('user_id', currentUserId)
-        // Only show locations updated in the last 5 minutes
-        .gte('updated_at', new Date(Date.now() - 5 * 60 * 1000).toISOString());
+        // Only show locations updated in the last 2 hours
+        .gte('updated_at', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString());
 
       if (error) {
         console.error('Error fetching live locations:', error);

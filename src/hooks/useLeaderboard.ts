@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useUser } from '@/contexts/UserContext';
 import { LeaderboardEntry } from '@/types';
@@ -11,6 +11,25 @@ export function useLeaderboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   const supabase = createClient();
+
+  const fetchLeaderboard = useCallback(async () => {
+    if (!activeRoute) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('leaderboard')
+        .select('*')
+        .eq('route_id', activeRoute.id)
+        .order('rank');
+
+      if (!error && data) {
+        setEntries(data);
+      }
+    } catch (err) {
+      console.error('Error fetching leaderboard:', err);
+    }
+    setIsLoading(false);
+  }, [activeRoute, supabase]);
 
   useEffect(() => {
     if (!activeRoute) {
@@ -56,26 +75,7 @@ export function useLeaderboard() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [activeRoute]);
-
-  async function fetchLeaderboard() {
-    if (!activeRoute) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('leaderboard')
-        .select('*')
-        .eq('route_id', activeRoute.id)
-        .order('rank');
-
-      if (!error && data) {
-        setEntries(data);
-      }
-    } catch (err) {
-      console.error('Error fetching leaderboard:', err);
-    }
-    setIsLoading(false);
-  }
+  }, [activeRoute, fetchLeaderboard, supabase]);
 
   return { entries, isLoading, refetch: fetchLeaderboard };
 }

@@ -21,6 +21,8 @@ export function useWaypoints() {
     }
 
     async function fetchWaypoints() {
+      if (!activeRoute) return;
+
       setIsLoading(true);
       setError(null);
 

@@ -21,18 +21,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const supabase = createClient();
 
-  // Load user from localStorage on mount
-  useEffect(() => {
-    const storedUserId = localStorage.getItem('ptp_user_id');
-    if (storedUserId) {
-      loadUser(storedUserId);
-    } else {
-      setIsLoading(false);
-    }
-    loadActiveRoute();
-  }, []);
-
-  async function loadUser(userId: string) {
+  const loadUser = useCallback(async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('users')
@@ -43,7 +32,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (data && !error) {
         setUser(data);
       } else {
-        // User not found, clear localStorage
         localStorage.removeItem('ptp_user_id');
       }
     } catch (err) {
@@ -51,9 +39,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('ptp_user_id');
     }
     setIsLoading(false);
-  }
+  }, [supabase]);
 
-  async function loadActiveRoute() {
+  const loadActiveRoute = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('routes')
@@ -67,7 +55,18 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       console.error('Error loading active route:', err);
     }
-  }
+  }, [supabase]);
+
+  // Load user from localStorage on mount
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('ptp_user_id');
+    if (storedUserId) {
+      loadUser(storedUserId);
+    } else {
+      setIsLoading(false);
+    }
+    loadActiveRoute();
+  }, [loadUser, loadActiveRoute]);
 
   const login = useCallback(async (username: string): Promise<{ success: boolean; error?: string }> => {
     const trimmed = username.trim().toLowerCase();

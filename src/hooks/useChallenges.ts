@@ -21,6 +21,8 @@ export function useChallenges() {
     }
 
     async function fetchChallenges() {
+      if (!activeRoute) return;
+
       setIsLoading(true);
       setError(null);
 

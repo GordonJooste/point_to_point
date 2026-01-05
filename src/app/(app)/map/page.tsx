@@ -1,14 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Crosshair, Loader2, AlertCircle, Navigation2 } from 'lucide-react';
 import GoogleMapContainer from '@/components/map/GoogleMapContainer';
-import { useGeolocation } from '@/hooks/useGeolocation';
 import { useWaypoints } from '@/hooks/useWaypoints';
 import { useWaypointCompletions } from '@/hooks/useWaypointCompletions';
 import { useLiveLocations } from '@/hooks/useLiveLocations';
-import { useSendLocation } from '@/hooks/useSendLocation';
 import { useUser } from '@/contexts/UserContext';
+import { useLocationTracking } from '@/contexts/LocationTrackingContext';
 
 export default function MapPage() {
   const [isCompleting, setIsCompleting] = useState(false);
@@ -16,37 +15,20 @@ export default function MapPage() {
 
   const { user } = useUser();
 
+  // Location tracking is now handled by LocationTrackingContext in the app layout
   const {
     latitude,
     longitude,
     accuracy,
-    heading,
-    speed,
     error: geoError,
     isTracking,
-    startTracking,
-  } = useGeolocation();
+  } = useLocationTracking();
 
   const { waypoints, isLoading: waypointsLoading } = useWaypoints();
   const { completedIds, completeWaypoint } = useWaypointCompletions();
 
   // Fetch other users' locations
   const { locations: liveLocations } = useLiveLocations(user?.id);
-
-  // Send own location to database
-  useSendLocation({
-    userId: user?.id,
-    latitude,
-    longitude,
-    heading,
-    speed,
-    isTracking,
-  });
-
-  // Start location tracking on mount
-  useEffect(() => {
-    startTracking();
-  }, [startTracking]);
 
   const userLocation =
     latitude !== null && longitude !== null ? { lat: latitude, lng: longitude } : null;

@@ -98,7 +98,7 @@ export default function PhotoCapture({ onCapture, onCancel, isUploading = false,
           </div>
 
           {/* Action buttons */}
-          <div className="p-6 flex justify-center gap-6 bg-black">
+          <div className="p-6 pb-20 flex justify-center gap-6 bg-black">
             <button
               onClick={handleRetake}
               disabled={isUploading}

@@ -22,6 +22,8 @@ export function useChallengeCompletions() {
     }
 
     async function loadCompletions() {
+      if (!user || !activeRoute) return;
+
       try {
         const { data, error } = await supabase
           .from('challenge_completions')

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
+import { LocationTrackingProvider } from '@/contexts/LocationTrackingContext';
 import BottomNav from '@/components/ui/BottomNav';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -32,9 +33,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen pb-16">
-      {children}
-      <BottomNav />
-    </div>
+    <LocationTrackingProvider>
+      <div className="min-h-screen pb-16">
+        {children}
+        <BottomNav />
+      </div>
+    </LocationTrackingProvider>
   );
 }

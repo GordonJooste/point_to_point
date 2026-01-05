@@ -20,6 +20,8 @@ export function useGallery() {
     }
 
     async function fetchPhotos() {
+      if (!activeRoute) return;
+
       try {
         const { data, error } = await supabase
           .from('challenge_completions')

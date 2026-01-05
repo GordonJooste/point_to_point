@@ -22,6 +22,8 @@ export function useWaypointCompletions() {
     }
 
     async function loadCompletions() {
+      if (!user || !activeRoute) return;
+
       try {
         const { data, error } = await supabase
           .from('waypoint_completions')
