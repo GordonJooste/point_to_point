@@ -22,6 +22,7 @@ export type WaypointIcon =
   | 'checkpoint'
   | 'viewpoint'
   | 'food'
+  | 'cafe'
   | 'fuel'
   | 'accommodation'
   | 'start'

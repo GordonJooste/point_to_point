@@ -40,6 +40,7 @@ const iconConfig: Record<WaypointIcon, { color: string; emoji: string }> = {
   checkpoint: { color: '#3B82F6', emoji: '📍' },  // Blue
   viewpoint: { color: '#8B5CF6', emoji: '👁️' },   // Purple
   food: { color: '#F97316', emoji: '🍴' },        // Orange
+  cafe: { color: '#92400E', emoji: '☕' },        // Brown
   fuel: { color: '#EF4444', emoji: '⛽' },        // Red
   accommodation: { color: '#06B6D4', emoji: '🏨' }, // Cyan
   start: { color: '#22C55E', emoji: '🏁' },       // Green

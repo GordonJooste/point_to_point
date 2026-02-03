@@ -98,7 +98,7 @@ export default function MapPage() {
       </div>
 
       {/* Bottom Button - above nav bar */}
-      <div className="absolute bottom-20 right-4">
+      <div className="absolute right-4" style={{ bottom: 'calc(5rem + env(safe-area-inset-bottom))' }}>
         {/* Follow Mode Toggle */}
         <button
           onClick={() => setFollowMode(!followMode)}
